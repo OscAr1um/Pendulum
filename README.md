@@ -142,7 +142,7 @@ plt.show()
 
 
     
-![png](output_20_0.png)
+![png](image/judge_boundary.png)
     
 
 
