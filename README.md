@@ -183,7 +183,7 @@ plt.show()
 
 
     
-![png](output_22_0.png)
+![png](image/trigram_judge_boundary.png)
     
 
 
@@ -210,7 +210,7 @@ plt.show()
 
 
     
-![png](output_24_0.png)
+![png](image/comparison_of_judge_module.png)
     
 
 
@@ -239,6 +239,6 @@ plt.show()
 
 
     
-![png](output_26_0.png)
+![png](image/comparison_of_deep_q_network.png)
     
 
