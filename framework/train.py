@@ -41,6 +41,7 @@ def train(agent: Any, model_name: str, num_episodes: int = 10000) -> Score:
             logging.info(scores[-1])
     agent.save_model(f"model/{model_name}")
     scores.save_scores(f"score/{model_name}.csv")
+    print(scores[-1])
     return scores
 
 
@@ -70,4 +71,5 @@ def train_with_inspect(agent: Any, model_name: str, num_episodes: int = 10000, j
             logging.info(scores[-1])
     agent.save_model(f"model/{model_name}")
     scores.save_scores(f"score/{model_name}.csv")
+    print(scores[-1])
     return scores

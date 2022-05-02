@@ -24,9 +24,9 @@ class Actor(nn.Module):
         self.net = nn.Sequential(
             nn.Linear(3, 256),
             nn.ReLU(),
-            nn.Linear(256, 128),
+            nn.Linear(256, 64),
             nn.ReLU(),
-            nn.Linear(128, 1),
+            nn.Linear(64, 1),
             nn.Tanh()
         )
     
@@ -51,7 +51,7 @@ class Critic(nn.Module):
 
 class DDPGAgent(Agent):
     """DDPG Agent."""
-    def __init__(self, device: torch.device, gamma: float = .99, epsilon: float = .01, actor_path: str = "", critic_path: str = "") -> None:
+    def __init__(self, device: torch.device, gamma: float = .99, epsilon: float = .1, actor_path: str = "", critic_path: str = "") -> None:
         self.device = device
         self.gamma = gamma
         self.epsilon = epsilon
@@ -62,7 +62,7 @@ class DDPGAgent(Agent):
             self.actor.load_state_dict(torch.load(actor_path))
         self.actor_target = Actor().to(self.device)
         self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=.001)
+        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=.001, weight_decay=.0001)
 
         # Critic
         self.critic = Critic().to(self.device)
@@ -70,7 +70,7 @@ class DDPGAgent(Agent):
             self.critic.load_state_dict(torch.load(critic_path))
         self.critic_target = Critic().to(self.device)
         self.critic_target.load_state_dict(self.critic.state_dict())
-        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=.001)
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=.001, weight_decay=.0001)
 
         # Replay Buffer
         self.buffer = ExperienceReplay(self.device)

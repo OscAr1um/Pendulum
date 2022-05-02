@@ -36,7 +36,7 @@ class JudgeModule(nn.Module):
 
 class JudgeAgent(Agent):
     """Judge Agent."""
-    def __init__(self, device: torch.device, num_actions: int = 128, gamma: float = .99, 
+    def __init__(self, device: torch.device, num_actions: int = 64, gamma: float = .99, 
                  epsilon: float = .1, model_path: str = "") -> None:
         self.device = device
         self.actions = np.linspace(-MAX_TORQUE, MAX_TORQUE, num_actions, dtype="float32")
@@ -109,11 +109,11 @@ class JudgeAgent(Agent):
 
 class TrigramJudgeAgent(JudgeAgent):
     """Trigram Judge Agent."""
-    def __init__(self, device: torch.device, c: float = .9999, num_actions: int = 128, 
+    def __init__(self, device: torch.device, c: float = .9999, num_actions: int = 64, 
                  gamma: float = .99, epsilon: float = .1, model_path: str = "") -> None:
         super().__init__(device, num_actions, gamma, epsilon, model_path)
         self.c = c
-        self.cache = deque(maxlen=2)
+        self.cache = deque(maxlen=3)
     
     def step(self, state: np.ndarray, action: np.ndarray, reward: np.ndarray, damage: np.ndarray, 
              next_state: np.ndarray, done: bool) -> None:
@@ -122,11 +122,9 @@ class TrigramJudgeAgent(JudgeAgent):
                                                   torch.tensor(damage, dtype=torch.float),
                                                   torch.from_numpy(next_state),
                                                   torch.tensor(1.) if done else torch.tensor(0.))
-        if self.cache and (self.cache[-1][2] == 0.) and (not torch.equal(self.cache[-1][3], state)):
-            self.cache.clear()
         self.cache.append((state, index, damage, next_state, done))
-        if len(self.cache) == 2:
-            self.buffer.add(*self.cache[0], self.cache[1][3])
+        if len(self.cache) == 3:
+            self.buffer.add(self.cache[0][0], self.cache[0][1], self.cache[0][2], self.cache[1][0], self.cache[0][4], self.cache[2][0])
 
         samples = self.buffer.sample()
         if samples:

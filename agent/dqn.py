@@ -34,8 +34,8 @@ class DQN(nn.Module):
 
 class DQNAgent(Agent):
     """DQN Agent."""
-    def __init__(self, device: torch.device, num_actions: int = 128, gamma: float = .99, 
-                 epsilon: float = .01, model_path: str = "") -> None:
+    def __init__(self, device: torch.device, num_actions: int = 64, gamma: float = .99, 
+                 epsilon: float = .1, model_path: str = "") -> None:
         self.device = device
         self.actions = np.linspace(-MAX_TORQUE, MAX_TORQUE, num_actions, dtype="float32")
         self.gamma = gamma
@@ -47,7 +47,7 @@ class DQNAgent(Agent):
             self.dqn.load_state_dict(torch.load(model_path))
         self.dqn_target = DQN(num_actions).to(self.device)
         self.dqn_target.load_state_dict(self.dqn.state_dict())
-        self.optimizer = optim.Adam(self.dqn.parameters(), lr=.001)
+        self.optimizer = optim.Adam(self.dqn.parameters(), lr=.001, weight_decay=.0001)
 
         # Replay Buffer
         self.buffer = ExperienceReplay(self.device)
@@ -102,8 +102,8 @@ class DQNAgent(Agent):
 
 
 class AssuredDQNAgent(DQNAgent):
-    def __init__(self, device: torch.device, num_actions: int = 128, judge: Any = None, penalty: Optional[float] = None, 
-                 gamma: float = 0.99, epsilon: float = 0.1, model_path: str = "") -> None:
+    def __init__(self, device: torch.device, num_actions: int = 64, judge: Any = None, penalty: Optional[float] = None, 
+                 gamma: float = .99, epsilon: float = .1, model_path: str = "") -> None:
         super().__init__(device, num_actions, gamma, epsilon, model_path)
         self.judge = judge
         if penalty is not None:
